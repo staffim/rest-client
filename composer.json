@@ -11,7 +11,7 @@
     "require-dev": {},
     "autoload": {
         "psr-4": {
-            "Staffim\\RestClient\\": "src"
+            "Staffim\\RestClient\\": ""
         }
     }
 }
