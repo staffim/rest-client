@@ -45,7 +45,7 @@ class Client
 
     public function patch($id, array $operations = [], $statusCode = 200, $parameters = [])
     {
-        $this->client->request('PATCH', $this->baseUrl, [], [], [], json_encode($data));
+        $this->client->request('PATCH', $this->baseUrl . '/' . $id, [], [], [], json_encode($operations));
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
