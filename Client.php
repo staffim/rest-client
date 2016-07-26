@@ -31,7 +31,7 @@ class Client
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
-        return new RestResponse($this->client->getResponse());
+        return new Response($this->client->getResponse());
     }
 
     public function put($data, $statusCode = 200, array $parameters = [])
@@ -40,7 +40,7 @@ class Client
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
-        return new RestResponse($this->client->getResponse());
+        return new Response($this->client->getResponse());
     }
 
     public function patch($id, array $operations = [], $statusCode = 200, $parameters = [])
@@ -49,7 +49,7 @@ class Client
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
-        return new RestResponse($this->client->getResponse());
+        return new Response($this->client->getResponse());
     }
 
     public function get($id, $statusCode = 200, array $parameters = [])
@@ -58,7 +58,7 @@ class Client
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $response->getContent());
 
-        return new RestResponse($this->client->getResponse());
+        return new Response($this->client->getResponse());
     }
 
     public function delete($id, $statusCode = 204, array $parameters = [])
@@ -67,7 +67,7 @@ class Client
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
-        return new RestResponse($this->client->getResponse());
+        return new Response($this->client->getResponse());
     }
 
     public function getList($statusCode, $statusCode = 200, array $parameters = [])
