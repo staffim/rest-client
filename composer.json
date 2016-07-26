@@ -1,0 +1,17 @@
+{
+    "name": "staffim/rest-client",
+    "description": "",
+    "keywords": ["test", "rest", "client", "symfony"],
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {"name": "Vyacheslav Salakhutdinov", "email": "megazoll@gmail.com"}
+    ],
+    "require": {},
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "Staffim\\RestClient\\": "src"
+        }
+    }
+}
