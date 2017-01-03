@@ -25,9 +25,19 @@ class Client
         return $client;
     }
 
+    private function buildUrl(array $parts = [], array $parameters = [])
+    {
+        $url = implode('/', array_merge([$this->baseUrl], $parts));
+        if ($parameters) {
+            $url .= '?' . http_build_query($parameters);
+        }
+
+        return $url;
+    }
+
     public function post($data, $statusCode = 201, array $parameters = [])
     {
-        $this->client->request('POST', $this->baseUrl, [], [], [], json_encode($data));
+        $this->client->request('POST', $this->buildUrl([], $parameters), [], [], [], json_encode($data));
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
@@ -36,7 +46,7 @@ class Client
 
     public function put($data, $statusCode = 200, array $parameters = [])
     {
-        $this->client->request('PUT', $this->baseUrl . '/' . $data['id'], [], [], [], json_encode($data));
+        $this->client->request('PUT', $this->buildUrl([$data['id']], $parameters), [], [], [], json_encode($data));
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
@@ -45,7 +55,7 @@ class Client
 
     public function patch($id, array $operations = [], $statusCode = 200, $parameters = [])
     {
-        $this->client->request('PATCH', $this->baseUrl . '/' . $id, [], [], [], json_encode($operations));
+        $this->client->request('PATCH', $this->buildUrl([$id], $parameters), [], [], [], json_encode($operations));
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
@@ -54,7 +64,7 @@ class Client
 
     public function get($id, $statusCode = 200, array $parameters = [])
     {
-        $this->client->request('GET', $this->baseUrl . '/' . $id);
+        $this->client->request('GET', $this->buildUrl([$id], $parameters));
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $response->getContent());
 
@@ -63,15 +73,19 @@ class Client
 
     public function delete($id, $statusCode = 204, array $parameters = [])
     {
-        $this->client->request('DELETE', $this->baseUrl . '/' . $id);
+        $this->client->request('DELETE', $this->buildUrl([$id], $parameters));
         $response = $this->client->getResponse();
         \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
         return new Response($this->client->getResponse());
     }
 
-    public function getList($statusCode, $statusCode = 200, array $parameters = [])
+    public function getList(array $parameters = [], $statusCode = 200)
     {
+        $this->client->request('GET', $this->buildUrl([], $parameters));
+        $response = $this->client->getResponse();
+        \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
+        return new Response($this->client->getResponse());
     }
 }
