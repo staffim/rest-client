@@ -39,7 +39,7 @@ class Client
     {
         $this->client->request('POST', $this->buildUrl($extraUrl, $parameters), [], [], [], json_encode($data));
         $response = $this->client->getResponse();
-        \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
+        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
         return new Response($this->client->getResponse());
     }
@@ -48,7 +48,7 @@ class Client
     {
         $this->client->request('PUT', $this->buildUrl(array_merge([$data['id']], $extraUrl), $parameters), [], [], [], json_encode($data));
         $response = $this->client->getResponse();
-        \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
+        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
         return new Response($this->client->getResponse());
     }
@@ -57,7 +57,7 @@ class Client
     {
         $this->client->request('PATCH', $this->buildUrl(array_merge([$id], $extraUrl), $parameters), [], [], [], json_encode($operations));
         $response = $this->client->getResponse();
-        \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
+        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
         return new Response($this->client->getResponse());
     }
@@ -66,7 +66,7 @@ class Client
     {
         $this->client->request('GET', $this->buildUrl(array_merge([$id], $extraUrl), $parameters));
         $response = $this->client->getResponse();
-        \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $response->getContent());
+        $this->assertEquals($statusCode, $response->getStatusCode(), $response->getContent());
 
         return new Response($this->client->getResponse());
     }
@@ -75,7 +75,7 @@ class Client
     {
         $this->client->request('DELETE', $this->buildUrl([$id], $parameters));
         $response = $this->client->getResponse();
-        \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
+        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
         return new Response($this->client->getResponse());
     }
@@ -84,8 +84,21 @@ class Client
     {
         $this->client->request('GET', $this->buildUrl($extraUrl, $parameters));
         $response = $this->client->getResponse();
-        \PHPUnit_Framework_Assert::assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
+        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
 
         return new Response($this->client->getResponse());
+    }
+
+    private function assertEquals($expected, $actual, $message = '')
+    {
+        if (class_exists('\\PHPUnit_Framework_Assert')) {
+            return \PHPUnit_Framework_Assert::assertEquals($expected, $actual, $message);
+        }
+
+        if (class_exists('\\PHPUnit\\Framework\\Assert')) {
+            return \PHPUnit\Framework\Assert::assertEquals($expected, $actual, $message);
+        }
+
+        throw new \RuntimeException('PHPUnit not found');
     }
 }
