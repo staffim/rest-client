@@ -2,22 +2,92 @@
 
 namespace Staffim\RestClient;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+
 class Client
 {
+    /**
+     * @var string
+     */
     private $baseUrl;
 
+    /**
+     * @var \Symfony\Component\HttpKernel\KernelInterface
+     */
     private $kernel;
 
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Client
+     */
     private $client;
 
-    public function __construct($kernel, $baseUrl, array $headers = [])
+    public function __construct(KernelInterface $kernel, $baseUrl, array $headers = [])
     {
         $this->kernel = $kernel;
         $this->baseUrl = $baseUrl;
         $this->client = $this->createClient($kernel, $headers);
     }
 
-    private function createClient($kernel, array $headers = [])
+    public function post($data, $statusCode = 201, array $parameters = [], array $extraUrl = [])
+    {
+        $this->client->request('POST', $this->buildUrl($extraUrl, $parameters), [], [], [], json_encode($data));
+
+        return $this->createResponse($statusCode);
+    }
+
+    public function put($data, $statusCode = 200, array $parameters = [], array $extraUrl = [])
+    {
+        $this->client->request('PUT', $this->buildUrl(array_merge([$data['id']], $extraUrl), $parameters), [], [], [], json_encode($data));
+
+        return $this->createResponse($statusCode);
+    }
+
+    public function patch($id, array $operations = [], $statusCode = 200, $parameters = [], array $extraUrl = [])
+    {
+        $this->client->request(
+            'PATCH',
+            $this->buildUrl(array_merge([$id], $extraUrl), $parameters),
+            [],
+            [],
+            [],
+            json_encode($operations)
+        );
+
+        return $this->createResponse($statusCode);
+    }
+
+    public function get($id, $statusCode = 200, array $parameters = [], array $extraUrl = [])
+    {
+        $this->client->request('GET', $this->buildUrl(array_merge([$id], $extraUrl), $parameters));
+
+        return $this->createResponse($statusCode);
+    }
+
+    public function delete($id, $statusCode = 204, array $parameters = [])
+    {
+        $this->client->request('DELETE', $this->buildUrl([$id], $parameters));
+
+        return $this->createResponse($statusCode);
+    }
+
+    public function getList(array $parameters = [], $statusCode = 200, array $extraUrl = [])
+    {
+        $this->client->request('GET', $this->buildUrl($extraUrl, $parameters));
+        return $this->createResponse($statusCode);
+    }
+
+    private function createResponse($statusCode = 200)
+    {
+        $response = $this->client->getResponse();
+
+        if ($statusCode !== $response->getStatusCode()) {
+            throw new RestException($this->client);
+        }
+
+        return new Response($response);
+    }
+
+    private function createClient(KernelInterface $kernel, array $headers = [])
     {
         $client = $kernel->getContainer()->get('test.client');
         $client->setServerParameters($headers);
@@ -33,72 +103,5 @@ class Client
         }
 
         return $url;
-    }
-
-    public function post($data, $statusCode = 201, array $parameters = [], array $extraUrl = [])
-    {
-        $this->client->request('POST', $this->buildUrl($extraUrl, $parameters), [], [], [], json_encode($data));
-        $response = $this->client->getResponse();
-        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
-
-        return new Response($this->client->getResponse());
-    }
-
-    public function put($data, $statusCode = 200, array $parameters = [], array $extraUrl = [])
-    {
-        $this->client->request('PUT', $this->buildUrl(array_merge([$data['id']], $extraUrl), $parameters), [], [], [], json_encode($data));
-        $response = $this->client->getResponse();
-        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
-
-        return new Response($this->client->getResponse());
-    }
-
-    public function patch($id, array $operations = [], $statusCode = 200, $parameters = [], array $extraUrl = [])
-    {
-        $this->client->request('PATCH', $this->buildUrl(array_merge([$id], $extraUrl), $parameters), [], [], [], json_encode($operations));
-        $response = $this->client->getResponse();
-        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
-
-        return new Response($this->client->getResponse());
-    }
-
-    public function get($id, $statusCode = 200, array $parameters = [], array $extraUrl = [])
-    {
-        $this->client->request('GET', $this->buildUrl(array_merge([$id], $extraUrl), $parameters));
-        $response = $this->client->getResponse();
-        $this->assertEquals($statusCode, $response->getStatusCode(), $response->getContent());
-
-        return new Response($this->client->getResponse());
-    }
-
-    public function delete($id, $statusCode = 204, array $parameters = [])
-    {
-        $this->client->request('DELETE', $this->buildUrl([$id], $parameters));
-        $response = $this->client->getResponse();
-        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
-
-        return new Response($this->client->getResponse());
-    }
-
-    public function getList(array $parameters = [], $statusCode = 200, array $extraUrl = [])
-    {
-        $this->client->request('GET', $this->buildUrl($extraUrl, $parameters));
-        $response = $this->client->getResponse();
-        $this->assertEquals($statusCode, $response->getStatusCode(), $this->client->getResponse());
-
-        return new Response($this->client->getResponse());
-    }
-
-    private function assertEquals($expected, $actual, $message = '')
-    {
-        if (class_exists('\\PHPUnit_Framework_Assert')) {
-            return \PHPUnit_Framework_Assert::assertEquals($expected, $actual, $message);
-        }
-
-        if (class_exists('\\PHPUnit\\Framework\\Assert')) {
-            return \PHPUnit\Framework\Assert::assertEquals($expected, $actual, $message);
-        }
-
-        throw new \RuntimeException('PHPUnit not found');
     }
 }
