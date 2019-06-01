@@ -2,25 +2,25 @@
 
 namespace Staffim\RestClient;
 
-use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class RestException extends \RuntimeException
 {
     /**
-     * @var \Symfony\Component\HttpFoundation\Request
+     * @var KernelBrowser
      */
-    private $client;
+    private $kernelBrowser;
 
     /**
-     * @param \Symfony\Component\HttpFoundation\Request $client
+     * @param KernelBrowser $kernelBrowser
      */
-    public function __construct(Client $client)
+    public function __construct(KernelBrowser $kernelBrowser)
     {
-        $this->client = $client;
+        $this->kernelBrowser = $kernelBrowser;
 
-        parent::__construct('Unexpected response status code: ' . $client->getResponse()->getStatusCode());
+        parent::__construct('Unexpected response status code: ' . $kernelBrowser->getResponse()->getStatusCode());
     }
 
     /**
@@ -28,7 +28,7 @@ class RestException extends \RuntimeException
      */
     public function getRequest(): ?Request
     {
-        return $this->client->getRequest();
+        return $this->kernelBrowser->getRequest();
     }
 
     /**
@@ -36,7 +36,7 @@ class RestException extends \RuntimeException
      */
     public function getResponse(): ?Response
     {
-        return $this->client->getResponse();
+        return $this->kernelBrowser->getResponse();
     }
 
     /**
