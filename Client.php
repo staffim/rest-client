@@ -76,6 +76,20 @@ class Client
         return $this->createResponse($statusCode);
     }
 
+    public function file(array $files, $statusCode = 201, $data = [], array $parameters = [], array $extraUrl = [])
+    {
+        $this->client->request(
+            'POST',
+            $this->buildUrl($extraUrl, $parameters),
+            [],
+            $files,
+            [],
+            json_encode($data)
+        );
+
+        return $this->createResponse($statusCode);
+    }
+
     private function createResponse($statusCode = 200)
     {
         $response = $this->client->getResponse();
