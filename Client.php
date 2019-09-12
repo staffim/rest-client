@@ -63,9 +63,9 @@ class Client
         return $this->createResponse($statusCode);
     }
 
-    public function delete($id, $statusCode = 204, array $parameters = [])
+    public function delete($id, $statusCode = 204, array $parameters = [], array $extraUrl = [])
     {
-        $this->client->request('DELETE', $this->buildUrl([$id], $parameters));
+        $this->client->request('DELETE', $this->buildUrl(array_merge([$id], $extraUrl), $parameters));
 
         return $this->createResponse($statusCode);
     }
