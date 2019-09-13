@@ -2,15 +2,23 @@
 
 namespace Staffim\RestClient;
 
+use Symfony\Component\HttpFoundation\Response as RawResponse;
+
 class Response
 {
-    private $response;
+    /**
+     * @var RawResponse
+     */
+    private $rawResponse;
 
+    /**
+     * @var mixed
+     */
     private $data;
 
-    public function __construct($response)
+    public function __construct(RawResponse $response)
     {
-        $this->response = $response;
+        $this->rawResponse = $response;
         $this->data = json_decode($response->getContent(), true);
     }
 
@@ -19,19 +27,19 @@ class Response
         return $this->data;
     }
 
-    public function getResponse()
+    public function getRawResponse(): RawResponse
     {
-        return $this->response;
+        return $this->rawResponse;
     }
 
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
-        return $this->getResponse()->getStatusCode();
+        return $this->getRawResponse()->getStatusCode();
     }
 
-    public function assertStatusCode($expectedStatusCode)
+    public function assertStatusCode(int $expectedStatusCode)
     {
-        \PHPUnit_Framework_Assert::assertEquals($expectedStatusCode, $this->getStatusCode(), $this->getResponse());
+        \PHPUnit_Framework_Assert::assertEquals($expectedStatusCode, $this->getStatusCode(), $this->getRawResponse());
 
         return $this;
     }
