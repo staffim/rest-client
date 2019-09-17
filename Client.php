@@ -85,7 +85,7 @@ class Client
         return $this->createResponse($statusCode);
     }
 
-    public function getList(array $parameters = [], $statusCode = 200): Response
+    public function getList(array $parameters = [], $statusCode = 200, array $options = []): Response
     {
         $this->kernelBrowser->request('GET', $this->buildUrl($options['extraUrl'] ?? [], $parameters));
 
