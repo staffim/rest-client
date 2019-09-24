@@ -73,23 +73,32 @@ class Client
 
     public function get($id, $statusCode = 200, array $options = []): Response
     {
-        $this->kernelBrowser->request('GET', $this->buildUrl(array_merge([$id], $options['extraUrl'] ?? []), $options['query'] ?? []));
+        $this->kernelBrowser->request('GET', $this->buildUrlFromOptions($options, [$id]));
 
         return $this->createResponse($statusCode);
     }
 
     public function delete($id, $statusCode = 204, array $options = [])
     {
-        $this->kernelBrowser->request('DELETE', $this->buildUrl(array_merge([$id], $options['extraUrl'] ?? []), $options['query'] ?? []));
+        $this->kernelBrowser->request('DELETE', $this->buildUrlFromOptions($options, [$id]));
 
         return $this->createResponse($statusCode);
     }
 
     public function getList(array $parameters = [], $statusCode = 200, array $options = []): Response
     {
-        $this->kernelBrowser->request('GET', $this->buildUrl($options['extraUrl'] ?? [], $parameters));
+        $options['query'] = array_merge($options['query'] ?? [], $parameters);
+        $this->kernelBrowser->request('GET', $this->buildUrlFromOptions($options, []));
 
         return $this->createResponse($statusCode);
+    }
+
+    /**
+     * @return KernelBrowser
+     */
+    public function getKernelBrowser(): KernelBrowser
+    {
+        return $this->kernelBrowser;
     }
 
     private function createResponse($statusCode = 200): Response
@@ -111,9 +120,9 @@ class Client
         return $browser;
     }
 
-    private function buildUrlFromOptions(array $options = [], array $additionalParams = []): string
+    private function buildUrlFromOptions(array $options = [], array $additionalPath = []): string
     {
-        return $this->buildUrl(array_merge($additionalParams, $options['extraUrl'] ?? []), $options['query'] ?? []);
+        return $this->buildUrl(array_merge($additionalPath, $options['extraUrl'] ?? []), $options['query'] ?? []);
     }
 
     private function buildUrl(array $parts = [], array $parameters = []): string
