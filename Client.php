@@ -37,7 +37,7 @@ class Client
             $options['parameters'] ?? [],
             $options['files'] ?? [],
             $options['server'] ?? [],
-            is_array($data) ? json_encode($data) : $data
+            $this->prepareContent($data)
         );
 
         return $this->createResponse($statusCode);
@@ -45,13 +45,15 @@ class Client
 
     public function put($data, $statusCode = 200, array $options = []): Response
     {
+        $additionalPath = is_array($data) && array_key_exists('id', $data) ? [$data['id']] : [];
+
         $this->kernelBrowser->request(
             'PUT',
-            $this->buildUrlFromOptions($options, [$data['id']]),
+            $this->buildUrlFromOptions($options, $additionalPath),
             $options['parameters'] ?? [],
             $options['files'] ?? [],
             $options['server'] ?? [],
-            is_array($data) ? json_encode($data) : $data
+            $this->prepareContent($data)
         );
 
         return $this->createResponse($statusCode);
@@ -65,7 +67,7 @@ class Client
             $options['parameters'] ?? [],
             $options['files'] ?? [],
             $options['server'] ?? [],
-            is_array($operations) ? json_encode($operations) : $operations
+            $this->prepareContent($operations)
         );
 
         return $this->createResponse($statusCode);
@@ -133,5 +135,10 @@ class Client
         }
 
         return $url;
+    }
+
+    private function prepareContent($data): string
+    {
+        return is_array($data) ? json_encode($data) : $data;
     }
 }
